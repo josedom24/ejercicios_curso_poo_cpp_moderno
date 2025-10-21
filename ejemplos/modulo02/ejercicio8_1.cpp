@@ -1,3 +1,4 @@
+#include <string>   
 class Persona {
 public:
     std::string nombre;
