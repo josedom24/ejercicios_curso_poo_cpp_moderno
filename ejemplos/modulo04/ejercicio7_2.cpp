@@ -1,36 +1,43 @@
 #include <iostream>
 #include <string>
 
-// Clase base
 class Animal {
-private:
-    std::string nombre;
-
 public:
-    Animal(const std::string& n) : nombre{n} {}
-
-    void mostrarNombre() const {
-        std::cout << "Nombre: " << nombre << std::endl;
+    virtual void hablar() const {
+        std::cout << "El animal emite un sonido." << std::endl;
     }
+
+    virtual ~Animal() = default; // Destructor virtual recomendado
 };
 
-// Clase derivada
 class Perro : public Animal {
-private:
-    std::string raza;
-
 public:
-    Perro(const std::string& n, const std::string& r)
-        : Animal{n}, raza{r} {}
-
-    void mostrar() const {
-        mostrarNombre();  // Método heredado de Animal
-        std::cout << "Raza: " << raza << std::endl;
+    void hablar() const override {
+        std::cout << "El perro ladra." << std::endl;
     }
 };
+
+class Gato : public Animal {
+public:
+    void hablar() const override {
+        std::cout << "El gato maúlla." << std::endl;
+    }
+};
+
+void hacerHablar(const Animal& a) {
+    a.hablar();
+}
 
 int main() {
-    Perro p("Toby", "Labrador");
-    p.mostrar();
+    Perro p{};
+    Gato g{};
+
+    hacerHablar(p);  // "El perro ladra."
+    hacerHablar(g);  // "El gato maúlla."
+
+    Animal* ptr = new Perro{};
+    ptr->hablar();   // "El perro ladra."
+    delete ptr;
+
     return 0;
 }

@@ -1,43 +1,29 @@
 #include <iostream>
-#include <string>
+#include <typeinfo>
 
-class Animal {
+class Dispositivo {
 public:
-    virtual void hablar() const {
-        std::cout << "El animal emite un sonido." << std::endl;
-    }
-
-    virtual ~Animal() = default; // Destructor virtual recomendado
+    virtual void info() const { std::cout << "Dispositivo genérico\n"; }
+    virtual ~Dispositivo() = default;
 };
 
-class Perro : public Animal {
+class Camara : public Dispositivo {
 public:
-    void hablar() const override {
-        std::cout << "El perro ladra." << std::endl;
-    }
+    void info() const override { std::cout << "Cámara de seguridad\n"; }
 };
 
-class Gato : public Animal {
-public:
-    void hablar() const override {
-        std::cout << "El gato maúlla." << std::endl;
+void procesar(Dispositivo& d) {
+    try {
+        Camara& c = dynamic_cast<Camara&>(d);
+        c.info();
+    } catch (const std::bad_cast& e) {
+        std::cout << "Conversión fallida: " << e.what() << '\n';
     }
-};
-
-void hacerHablar(const Animal& a) {
-    a.hablar();
 }
 
 int main() {
-    Perro p{};
-    Gato g{};
-
-    hacerHablar(p);  // "El perro ladra."
-    hacerHablar(g);  // "El gato maúlla."
-
-    Animal* ptr = new Perro{};
-    ptr->hablar();   // "El perro ladra."
-    delete ptr;
-
-    return 0;
+    Camara cam;
+    Dispositivo base;
+    procesar(cam);   // Conversión válida
+    procesar(base);  // Conversión inválida: lanza std::bad_cast
 }

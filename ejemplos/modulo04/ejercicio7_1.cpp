@@ -1,24 +1,22 @@
 #include <iostream>
 
-// Clase base
 class Base {
 public:
-    void funcionBase() {
-        std::cout << "Función de la clase base" << std::endl;
+    virtual void funcion() {
+        std::cout << "Función base\n";
     }
+    virtual ~Base() = default; // Destructor virtual
 };
 
-// Clase derivada
 class Derivada : public Base {
 public:
-    void funcionDerivada() {
-        std::cout << "Función específica de la clase derivada" << std::endl;
+    void funcion() override {
+        std::cout << "Función derivada\n";
     }
 };
 
 int main() {
-    Derivada obj;
-    obj.funcionBase();     // Método heredado de Base
-    obj.funcionDerivada(); // Método propio de Derivada
-    return 0;
+    Base* b = new Derivada();
+    b->funcion();  // Llama a la versión de Derivada
+    delete b;
 }

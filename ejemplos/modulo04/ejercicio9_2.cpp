@@ -1,29 +1,36 @@
 #include <iostream>
-#include <typeinfo>
+#include <vector>
+#include <memory>
 
-class Dispositivo {
+class Animal {
 public:
-    virtual void info() const { std::cout << "Dispositivo genérico\n"; }
-    virtual ~Dispositivo() = default;
+    virtual void hacerSonido() const = 0;
+    virtual ~Animal() = default; // Destructor virtual
 };
 
-class Camara : public Dispositivo {
+class Perro : public Animal {
 public:
-    void info() const override { std::cout << "Cámara de seguridad\n"; }
-};
-
-void procesar(Dispositivo& d) {
-    try {
-        Camara& c = dynamic_cast<Camara&>(d);
-        c.info();
-    } catch (const std::bad_cast& e) {
-        std::cout << "Conversión fallida: " << e.what() << '\n';
+    void hacerSonido() const override {
+        std::cout << "Guau\n";
     }
-}
+};
+
+class Gato : public Animal {
+public:
+    void hacerSonido() const override {
+        std::cout << "Miau\n";
+    }
+};
 
 int main() {
-    Camara cam;
-    Dispositivo base;
-    procesar(cam);   // Conversión válida
-    procesar(base);  // Conversión inválida: lanza std::bad_cast
+    std::vector<std::unique_ptr<Animal>> animales;
+
+    animales.push_back(std::make_unique<Perro>());
+    animales.push_back(std::make_unique<Gato>());
+
+    for (const auto& animal : animales) {
+        animal->hacerSonido(); // Se resuelve dinámicamente
+    }
+
+    return 0;
 }
