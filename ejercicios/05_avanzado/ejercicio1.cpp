@@ -52,11 +52,11 @@ public:
 };
 
 int main() {
-    Imagen img1("foto_original", 5'000'000);
+    Imagen img1("foto_original", 5000000);
     Imagen img2 = img1;                // Constructor de copia
     Imagen img3 = std::move(img1);     // Constructor de movimiento
 
-    Imagen img4("imagen_extra", 3'000'000);
+    Imagen img4("imagen_extra", 3000000);
     img4 = img2;                       // Asignación por copia
     img4 = std::move(img3);            // Asignación por movimiento
 
