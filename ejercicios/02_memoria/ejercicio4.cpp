@@ -1,46 +1,44 @@
 #include <iostream>
-#include <memory>   // std::shared_ptr, std::make_shared
+#include <memory>
+#include <string>
 
-// Clase que simula un recurso compartido
-class RecursoCompartido {
+class Nodo {
 public:
-    // Constructor: simula la adquisición del recurso
-    RecursoCompartido() {
-        std::cout << "Recurso compartido creado.\n";
+    std::string nombre;
+    std::shared_ptr<Nodo> siguiente;  // Propiedad fuerte
+    std::weak_ptr<Nodo> anterior;     // Observador débil (sin propiedad)
+
+    Nodo(const std::string& n) : nombre(n) {
+        std::cout << "Creando nodo: " << nombre << "\n";
     }
 
-    // Destructor: simula la liberación del recurso
-    ~RecursoCompartido() {
-        std::cout << "Recurso compartido liberado.\n";
-    }
-
-    // Método que representa el uso del recurso
-    void usar() const {
-        std::cout << "Usando el recurso compartido.\n";
+    ~Nodo() {
+        std::cout << "Destruyendo nodo: " << nombre << "\n";
     }
 };
 
 int main() {
-    std::cout << "Inicio del programa\n";
+    // Crear nodos usando make_shared (recomendado en C++ moderno)
+    auto nodo1 = std::make_shared<Nodo>("A");
+    auto nodo2 = std::make_shared<Nodo>("B");
+    auto nodo3 = std::make_shared<Nodo>("C");
 
-    // Creación de un recurso compartido
-    std::shared_ptr<RecursoCompartido> sp1 = std::make_shared<RecursoCompartido>();
+    // Enlace hacia adelante con shared_ptr
+    nodo1->siguiente = nodo2;
+    nodo2->siguiente = nodo3;
 
-    {
-        // Se crea una nueva copia compartida
-        std::shared_ptr<RecursoCompartido> sp2 = sp1;
+    // Enlace hacia atrás con weak_ptr para evitar ciclo
+    nodo2->anterior = nodo1;
+    nodo3->anterior = nodo2;
 
-        std::cout << "Número de propietarios actuales: " << sp1.use_count() << '\n';
+    // Mostrar contadores de referencias
+    std::cout << "\nContadores de shared_ptr:\n";
+    std::cout << "nodo1.use_count(): " << nodo1.use_count() << "\n";
+    std::cout << "nodo2.use_count(): " << nodo2.use_count() << "\n";
+    std::cout << "nodo3.use_count(): " << nodo3.use_count() << "\n\n";
 
-        // Ambos punteros pueden acceder al recurso
-        sp1->usar();
-        sp2->usar();
+    // Fin del bloque -> los nodos serán destruidos automáticamente
+    std::cout << "Saliendo de main...\n";
 
-        std::cout << "Saliendo del bloque interno...\n";
-    } // sp2 se destruye: el contador de referencias disminuye
-
-    std::cout << "Número de propietarios tras el bloque: " << sp1.use_count() << '\n';
-
-    std::cout << "Fin del programa\n";
     return 0;
-} // sp1 se destruye, el contador llega a 0, se libera el recurso
+}
