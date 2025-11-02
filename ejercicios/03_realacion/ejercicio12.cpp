@@ -1,67 +1,58 @@
 #include <iostream>
 #include <string>
 
-// Clase Profesor: representa a un docente que existe de manera independiente
-// y que puede impartir uno o varios cursos.
+// Clase que representa a un profesor.
+// Existe de forma independiente y puede impartir varios cursos.
 class Profesor {
-private:
-    std::string nombre_;  // Nombre del profesor
-
 public:
-    // Constructor para inicializar el nombre
-    Profesor(const std::string& nombre) : nombre_(nombre) {}
+    explicit Profesor(std::string nombre)
+        : nombre_(std::move(nombre)) {}
 
-    // Método que simula que el profesor da una clase
     void darClase() const {
-        std::cout << "El profesor " << nombre_ << " está dando clase." << std::endl;
+        std::cout << nombre_ << " está impartiendo su clase.\n";
     }
 
-    // Método de acceso al nombre (getter)
-    std::string getNombre() const {
+    std::string obtenerNombre() const {
         return nombre_;
     }
+
+private:
+    std::string nombre_;
 };
 
-// Clase Curso: representa un curso en la universidad.
-// Tiene un título y un puntero a un Profesor.
-// Aquí se establece una relación de ASOCIACIÓN unidireccional:
-// el Curso conoce a su Profesor, pero no lo posee ni gestiona su vida.
+// Clase que representa a un curso universitario.
+// Mantiene una asociación hacia un profesor, pero no lo posee.
 class Curso {
-private:
-    std::string titulo_;   // Título del curso
-    Profesor* profesor_;   // Asociación: referencia a un Profesor (no propietario)
-
 public:
-    // Constructor: recibe el título del curso y un puntero al profesor
-    Curso(const std::string& titulo, Profesor* profesor)
-        : titulo_(titulo), profesor_(profesor) {}
+    // El curso siempre debe tener un profesor asignado (asociación obligatoria).
+    // Se usa una referencia constante, ya que el curso no modifica ni destruye al profesor.
+    Curso(std::string titulo, const Profesor& profesor)
+        : titulo_(std::move(titulo)), profesor_(profesor) {}
 
-    // Método que muestra la información del curso y del profesor asociado
     void mostrarInfo() const {
-        if (profesor_) {
-            std::cout << "Curso: " << titulo_
-                      << " | Profesor responsable: " << profesor_->getNombre()
-                      << std::endl;
-        } else {
-            std::cout << "Curso: " << titulo_
-                      << " | Profesor no asignado." << std::endl;
-        }
+        std::cout << "Curso: " << titulo_
+                  << " | Profesor: " << profesor_.obtenerNombre() << "\n";
     }
+
+    void iniciarClase() const {
+        std::cout << "Iniciando clase de " << titulo_ << "...\n";
+        profesor_.darClase();
+    }
+
+private:
+    std::string titulo_;
+    const Profesor& profesor_; // Asociación no propietaria (referencia obligatoria)
 };
 
 int main() {
-    // Se crea un profesor de manera independiente
-    Profesor prof("Dr. García");
+    Profesor p("Dr. García"); // El profesor existe independientemente
+    Curso c("Programación en C++", p); // El curso se asocia al profesor existente
 
-    // Se crea un curso y se asocia con el profesor existente.
-    // El Curso no es dueño del Profesor: el profesor sigue existiendo aunque el curso desaparezca.
-    Curso curso("Programación en C++", &prof);
+    c.mostrarInfo();
+    c.iniciarClase();
 
-    // Mostrar la información del curso junto con el profesor asociado
-    curso.mostrarInfo();
-
-    // El profesor puede seguir existiendo fuera del curso
-    prof.darClase();
-
+    // Al finalizar el programa:
+    // - El curso NO destruye al profesor.
+    // - El profesor puede seguir existiendo y usarse en otros cursos.
     return 0;
 }
