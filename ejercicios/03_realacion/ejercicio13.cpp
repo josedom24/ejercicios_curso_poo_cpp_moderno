@@ -1,82 +1,65 @@
 #include <iostream>
+#include <memory>
 #include <string>
-#include <vector>
 
-// Clase Jugador: representa a un jugador del club deportivo.
-// Los jugadores existen de manera independiente a los equipos.
+// Clase Jugador
 class Jugador {
-private:
-    std::string nombre_;  // Nombre del jugador
-
 public:
-    // Constructor que inicializa el nombre del jugador
-    Jugador(const std::string& nombre) : nombre_(nombre) {}
+    explicit Jugador(std::string nombre)
+        : nombre_(std::move(nombre)) {}
 
-    // Método que simula que el jugador participa en un partido
     void jugar() const {
-        std::cout << "El jugador " << nombre_ << " está jugando." << std::endl;
+        std::cout << nombre_ << " está jugando.\n";
     }
 
-    // Getter para obtener el nombre
-    std::string getNombre() const {
-        return nombre_;
-    }
+    std::string obtenerNombre() const { return nombre_; }
+
+private:
+    std::string nombre_;
 };
 
-// Clase Equipo: representa un equipo del club deportivo.
-// Tiene un nombre y mantiene una lista de punteros a jugadores.
-// Aquí hay una relación de AGREGACIÓN: el Equipo usa jugadores,
-// pero no los posee ni controla su ciclo de vida.
+// Clase Equipo que agrega a un jugador sin ser su propietario
 class Equipo {
-private:
-    std::string nombre_;                 // Nombre del equipo
-    std::vector<Jugador*> jugadores_;    // Lista de jugadores asociados (no propietarios)
-
 public:
-    // Constructor para inicializar el nombre del equipo
-    Equipo(const std::string& nombre) : nombre_(nombre) {}
+    Equipo(std::string nombre, std::shared_ptr<Jugador> jugador)
+        : nombre_(std::move(nombre)), jugador_(jugador) {}
 
-    // Método para agregar un jugador al equipo
-    void agregarJugador(Jugador* jugador) {
-        jugadores_.push_back(jugador);
-    }
-
-    // Método para mostrar los jugadores del equipo
-    void mostrarEquipo() const {
-        std::cout << "Equipo: " << nombre_ << std::endl;
-        if (jugadores_.empty()) {
-            std::cout << "  No hay jugadores en este equipo." << std::endl;
+    void mostrar() const {
+        std::cout << "Equipo: " << nombre_ << "\n";
+        if (auto j = jugador_.lock()) { // comprobamos si el jugador sigue existiendo
+            std::cout << "Jugador: " << j->obtenerNombre() << "\n";
         } else {
-            for (const auto& jugador : jugadores_) {
-                std::cout << "  Jugador: " << jugador->getNombre() << std::endl;
-            }
+            std::cout << "Jugador: [ya no existe]\n";
         }
     }
+
+    void entrenar() const {
+        std::cout << "Entrenando equipo " << nombre_ << "...\n";
+        if (auto j = jugador_.lock()) {
+            j->jugar();
+        } else {
+            std::cout << "No hay jugador disponible.\n";
+        }
+    }
+
+private:
+    std::string nombre_;
+    std::weak_ptr<Jugador> jugador_; // relación no propietaria
 };
 
 int main() {
-    // Se crean jugadores independientes que existen aunque no estén en un equipo
-    Jugador j1("Carlos");
-    Jugador j2("María");
-    Jugador j3("Ana");
+    auto jugador = std::make_shared<Jugador>("Laura");
 
-    // Se crea un equipo y se agregan jugadores
-    Equipo equipo1("Tigres");
-    equipo1.agregarJugador(&j1);
-    equipo1.agregarJugador(&j2);
+    Equipo equipo("Águilas", jugador);
 
-    // Se crea otro equipo que comparte jugadores
-    Equipo equipo2("Leones");
-    equipo2.agregarJugador(&j2);
-    equipo2.agregarJugador(&j3);
+    equipo.mostrar();
+    equipo.entrenar();
 
-    // Mostrar información de los equipos
-    equipo1.mostrarEquipo();
-    equipo2.mostrarEquipo();
+    jugador.reset(); // simulamos que el jugador fue eliminado del sistema
 
-    // Los jugadores existen fuera de los equipos: siguen siendo válidos
-    j1.jugar();
-    j3.jugar();
+    std::cout << "\nDespués de eliminar al jugador:\n";
+    equipo.mostrar();
+    equipo.entrenar();
 
     return 0;
 }
