@@ -6,8 +6,10 @@
 // Define la interfaz común para todos los instrumentos.
 class Instrumento {
 public:
-    // Método virtual puro: obliga a las clases derivadas a implementarlo
-    virtual void tocar() const = 0;
+    // Método virtual 
+    virtual void tocar() const {
+        std::cout << "El instrumento produce un sonido genérico." << std::endl;
+    }
 
     // Destructor virtual: asegura destrucción correcta en herencia polimórfica
     virtual ~Instrumento() = default;
