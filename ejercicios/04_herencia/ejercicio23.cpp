@@ -1,57 +1,64 @@
 #include <iostream>
-#include <memory>
-#include <vector>
 
-// Clase base abstracta que representa un Animal genérico
 class Animal {
 public:
-    // Método virtual: cada animal define su propio sonido
     virtual void hacerSonido() const {
-        std::cout << "El animal emite un sonido genérico." << std::endl;
+        std::cout << "Sonido genérico de animal.\n";
     }
 
-    // Destructor virtual: asegura destrucción completa al usar punteros base
     virtual ~Animal() = default;
 };
 
-// Clase derivada: León
 class Leon : public Animal {
 public:
     void hacerSonido() const override {
-        std::cout << "Ruge el león." << std::endl;
+        std::cout << "Ruge el león.\n";
+    }
+
+    void cazar() const {
+        std::cout << "El león está cazando.\n";
     }
 };
 
-// Clase derivada: Elefante
 class Elefante : public Animal {
 public:
     void hacerSonido() const override {
-        std::cout << "Barrita el elefante." << std::endl;
+        std::cout << "Barrita el elefante.\n";
+    }
+
+    void banarse() const {
+        std::cout << "El elefante se baña.\n";
     }
 };
 
-// Clase derivada: Mono
 class Mono : public Animal {
 public:
-    void hacerSonido() const override {
-        std::cout << "Chilla el mono." << std::endl;
+    // No sobrescribe hacerSonido()
+    void columpiarse() const {
+        std::cout << "El mono se columpia.\n";
     }
 };
 
 int main() {
-    // Vector que almacena punteros inteligentes a la clase base Animal
-    std::vector<std::unique_ptr<Animal>> zoologico;
+    Leon leon;
+    Elefante elefante;
+    Mono mono;
 
-    // Insertamos distintos animales (cada uno es un tipo derivado)
-    zoologico.push_back(std::make_unique<Leon>());
-    zoologico.push_back(std::make_unique<Elefante>());
-    zoologico.push_back(std::make_unique<Mono>());
+    // --- Conversión implícita de Derivada& a Base& ---
+    Animal& refAnimal1 = leon;
+    Animal& refAnimal2 = elefante;
+    Animal& refAnimal3 = mono;
 
-    // Recorremos el vector e invocamos el método polimórfico
-    std::cout << "=== Sonidos del zoológico ===\n";
-    for (const auto& animal : zoologico) {
-        animal->hacerSonido();  // Se llama al método correcto según el tipo real
-    }
+    // Acceso solo a métodos declarados en la clase base
+    refAnimal1.hacerSonido(); // Llama a Leon::hacerSonido()
+    refAnimal2.hacerSonido(); // Llama a Elefante::hacerSonido()
+    refAnimal3.hacerSonido(); // Llama a Animal::hacerSonido() (no sobrescrito)
 
+    // No se puede acceder a métodos propios de las derivadas:
+    // refAnimal1.cazar();       // Error de compilación
+    // refAnimal2.banarse();     // Error de compilación
+    // refAnimal3.columpiarse(); // Error de compilación
+
+    std::cout << "Demostración de conversiones implícitas y polimorfismo dinámico completada.\n";
     return 0;
 }
