@@ -23,15 +23,14 @@ public:
 };
 
 // Clase derivada de Perro (para demostrar el error si intentamos sobrescribir)
+/*
 class PerroEspecial : public Perro {
 public:
-    // Si descomentamos este método, el compilador dará error
-    /*
-    void hacerSonido() const override {
+    void hacerSonido() const override { // Error: método final en Perro
         std::cout << "Guau especial\n";
     }
-    */
 };
+*/
 
 // Clase Gato declarada como final: no puede tener clases derivadas
 class Gato final : public Animal {
@@ -43,7 +42,7 @@ public:
 
 // Si intentamos heredar de Gato, el compilador también dará error
 /*
-class GatoSiames : public Gato {
+class GatoSiames : public Gato { // Error: Gato es final
 };
 */
 
@@ -51,11 +50,12 @@ int main() {
     Perro p;
     Gato g;
 
-    Animal* a1 = &p;
-    Animal* a2 = &g;
+    // Uso de referencias en lugar de punteros
+    Animal& a1 = p;
+    Animal& a2 = g;
 
-    a1->hacerSonido();  // Llama a Perro::hacerSonido -> "Guau guau"
-    a2->hacerSonido();  // Llama a Gato::hacerSonido  -> "Miau miau"
+    a1.hacerSonido();  // Llama a Perro::hacerSonido -> "Guau guau"
+    a2.hacerSonido();  // Llama a Gato::hacerSonido  -> "Miau miau"
 
     return 0;
 }
