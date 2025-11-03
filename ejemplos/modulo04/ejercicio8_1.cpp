@@ -36,4 +36,8 @@ int main() {
         temp->leer();       // Correcto
         temp->calibrar();   // Acceso a métodos propios del derivado
     } else {
-        std::cout << "El objeto
+        std::cout << "El objeto no es un SensorTemperatura.\n";
+    }
+
+    return 0;
+}
