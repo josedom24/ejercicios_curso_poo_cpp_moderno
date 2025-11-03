@@ -1,36 +1,54 @@
 #include <iostream>
-#include <vector>
-#include <memory>
 
 class Animal {
 public:
-    virtual void hacerSonido() const = 0;
-    virtual ~Animal() = default; // Destructor virtual
+    virtual void comer() const {
+        std::cout << "El animal come.\n";
+    }
 };
 
 class Perro : public Animal {
 public:
-    void hacerSonido() const override {
-        std::cout << "Guau\n";
+    // Sobrescribimos el método comer
+    void comer() const override {
+        std::cout << "El perro come su pienso.\n";
+    }
+
+    void ladrar() const {
+        std::cout << "El perro ladra.\n";
     }
 };
 
 class Gato : public Animal {
 public:
-    void hacerSonido() const override {
-        std::cout << "Miau\n";
+    // No sobrescribe comer(), hereda la versión de Animal
+    void maullar() const {
+        std::cout << "El gato maúlla.\n";
     }
 };
 
 int main() {
-    std::vector<std::unique_ptr<Animal>> animales;
+    Perro p;
+    Gato g;
 
-    animales.push_back(std::make_unique<Perro>());
-    animales.push_back(std::make_unique<Gato>());
+    // --- Conversión implícita de Derivada& a Base& ---
+    // Referencias a las derivadas se convierten automáticamente
+    // en referencias a la clase base (sin necesidad de casting).
+    Animal& refAnimal1 = p;
+    Animal& refAnimal2 = g;
 
-    for (const auto& animal : animales) {
-        animal->hacerSonido(); // Se resuelve dinámicamente
-    }
+    // Ambas referencias solo pueden usar métodos definidos en Animal:
+    refAnimal1.comer(); // Llama a Perro::comer() (método sobrescrito)
+    refAnimal2.comer(); // Llama a Animal::comer() (no sobrescrito en Gato)
 
+    // No podemos acceder a métodos exclusivos de las derivadas:
+    // refAnimal1.ladrar(); // Error: 'ladrar' no está en Animal
+    // refAnimal2.maullar(); // Error: 'maullar' no está en Animal
+
+    // Pero si accedemos directamente al objeto derivado, sí:
+    p.ladrar(); // Válido: tenemos un Perro
+    g.maullar(); // Válido: tenemos un Gato
+
+    std::cout << "Conversiones implícitas con referencias realizadas correctamente.\n";
     return 0;
 }
