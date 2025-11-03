@@ -7,6 +7,10 @@ private:
     std::shared_ptr<std::vector<int>> datos;
 
 public:
+    // Constructor por defecto
+    BufferSuperficial()
+        : datos(std::make_shared<std::vector<int>>()) {}
+
     // Constructor con datos iniciales
     BufferSuperficial(std::initializer_list<int> lista)
         : datos(std::make_shared<std::vector<int>>(lista)) {}
@@ -39,7 +43,7 @@ public:
 int main() {
     BufferSuperficial b1{1, 2, 3};
     BufferSuperficial b2 = b1;  // Constructor de copia (comparten datos)
-    BufferSuperficial b3;
+    BufferSuperficial b3;       // Constructor por defecto
     b3 = b1;                    // Asignación por copia (comparten datos)
 
     std::cout << "== Estado inicial ==\n";
