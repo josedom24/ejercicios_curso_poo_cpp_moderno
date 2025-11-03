@@ -19,7 +19,7 @@ public:
     DerivadoA(int d) : dato(d) {}
 
     std::unique_ptr<Clonable> clone() const override {
-        return std::make_unique<DerivadoA>(*this);  // Copia profunda
+        return std::make_unique<DerivadoA>(*this); // Copia profunda
     }
 
     void mostrar() const override {
@@ -36,7 +36,7 @@ public:
     DerivadoB(const std::vector<int>& v) : datos(v) {}
 
     std::unique_ptr<Clonable> clone() const override {
-        return std::make_unique<DerivadoB>(*this);  // Copia profunda
+        return std::make_unique<DerivadoB>(*this); // Copia profunda
     }
 
     void mostrar() const override {

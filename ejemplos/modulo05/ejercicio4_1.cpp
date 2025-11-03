@@ -1,28 +1,43 @@
 #include <iostream>
 #include <memory>
-#include <vector>
 
 class Buffer {
 private:
-    std::vector<int> datos;
+    std::unique_ptr<int[]> datos;
+    std::size_t tam;
 
 public:
-    Buffer(std::initializer_list<int> lista) : datos(lista) {}
+    // Constructor con tamaño e inicialización
+    Buffer(std::size_t n, int valor = 0)
+        : datos(std::make_unique<int[]>(n)), tam(n) {
+        for (std::size_t i = 0; i < tam; ++i)
+            datos[i] = valor;
+    }
 
     // Método de clonación
     std::unique_ptr<Buffer> clone() const {
-        return std::make_unique<Buffer>(*this);  // Copia profunda
+        auto nuevo = std::make_unique<Buffer>(tam);
+        for (std::size_t i = 0; i < tam; ++i)
+            nuevo->datos[i] = datos[i];  // Copia profunda
+        return nuevo;
+    }
+
+    void modificar(std::size_t i, int valor) {
+        if (i < tam) datos[i] = valor;
     }
 
     void mostrar() const {
-        for (int v : datos) std::cout << v << " ";
+        for (std::size_t i = 0; i < tam; ++i)
+            std::cout << datos[i] << " ";
         std::cout << "\n";
     }
 };
 
 int main() {
-    Buffer original{1, 2, 3};
-    auto copia = original.clone();  // Clonación profunda
+    Buffer original(3, 5);       // [5, 5, 5]
+    auto copia = original.clone(); // Clonación profunda
+
+    original.modificar(1, 99);   // Solo cambia el original
 
     std::cout << "Original: ";
     original.mostrar();
