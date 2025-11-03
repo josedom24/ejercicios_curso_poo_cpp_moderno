@@ -1,28 +1,24 @@
 #include <iostream>
-#include <utility>
+#include <utility> // std::move
 
-class RecursoControlado {
+class Registro {
 public:
-    RecursoControlado() { std::cout << "Creado\n"; }
-    ~RecursoControlado() { std::cout << "Destruido\n"; }
+    Registro() { std::cout << "Registro creado\n"; }
+    ~Registro() { std::cout << "Registro destruido\n"; }
 
-    // No copiable
-    RecursoControlado(const RecursoControlado&) = delete;
-    RecursoControlado& operator=(const RecursoControlado&) = delete;
+    Registro(const Registro&) = delete;            // No copiable
+    Registro& operator=(const Registro&) = delete;
 
-    // Movible
-    RecursoControlado(RecursoControlado&&) noexcept {
-        std::cout << "Movido (constructor)\n";
-    }
-
-    RecursoControlado& operator=(RecursoControlado&&) noexcept {
-        std::cout << "Movido (asignación)\n";
-        return *this;
-    }
+    Registro(Registro&&) noexcept = default;       // Movible
+    Registro& operator=(Registro&&) noexcept = default;
 };
 
 int main() {
-    RecursoControlado a;
-    RecursoControlado b = std::move(a); // movimiento permitido
-    // RecursoControlado c = b;         // Error: copia prohibida
+    Registro r1;                 // Creación normal
+    Registro r2 = std::move(r1); // Movimiento permitido
+
+    // Registro r3 = r2;          // Error: copia prohibida
+    // r3 = r1;                   // Error: asignación por copia prohibida
+
+    std::cout << "Fin del programa\n";
 }
