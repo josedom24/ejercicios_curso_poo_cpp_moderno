@@ -3,7 +3,11 @@
 
 class Sensor {
 public:
-    virtual void leer() const = 0; // Necesario para que sea polimórfica
+    // Método virtual 
+    virtual void leer() const {
+        std::cout << "Leyendo sensor genérico...\n";
+    }
+
     virtual ~Sensor() = default;
 };
 
@@ -32,8 +36,4 @@ int main() {
         temp->leer();       // Correcto
         temp->calibrar();   // Acceso a métodos propios del derivado
     } else {
-        std::cout << "El objeto no es un SensorTemperatura.\n";
-    }
-
-    return 0;
-}
+        std::cout << "El objeto
