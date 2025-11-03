@@ -1,50 +1,56 @@
 #include <iostream>
-#include <vector>
 #include <memory>
+#include <vector>
 
-// Copia superficial: comparte el mismo recurso
-class ContenedorSuperficial {
+class BufferSuperficial {
+private:
+    std::shared_ptr<std::vector<int>> datos;
+
 public:
-    std::vector<int>* datos;  // No posee la memoria
+    // Constructor con datos iniciales
+    BufferSuperficial(std::initializer_list<int> lista)
+        : datos(std::make_shared<std::vector<int>>(lista)) {}
 
-    ContenedorSuperficial(std::vector<int>* ptr) : datos(ptr) {}
-
-    void mostrar() const {
-        for (int i : *datos) std::cout << i << " ";
-        std::cout << "\n";
+    // Constructor de copia (copia superficial)
+    BufferSuperficial(const BufferSuperficial& other)
+        : datos(other.datos) {
+        std::cout << "Constructor de copia (superficial)\n";
     }
-};
 
-// Copia profunda: mantiene su propia copia de los datos
-class ContenedorProfundo {
-public:
-    std::vector<int> datos;
+    // Operador de asignación por copia (superficial)
+    BufferSuperficial& operator=(const BufferSuperficial& other) {
+        if (this != &other) {
+            datos = other.datos;
+            std::cout << "Asignación por copia (superficial)\n";
+        }
+        return *this;
+    }
 
-    ContenedorProfundo(const std::vector<int>& v) : datos(v) {}
+    void modificar(size_t i, int valor) {
+        if (i < datos->size()) (*datos)[i] = valor;
+    }
 
     void mostrar() const {
-        for (int i : datos) std::cout << i << " ";
+        for (int v : *datos) std::cout << v << " ";
         std::cout << "\n";
     }
 };
 
 int main() {
-    std::vector<int> base1 = {1, 2, 3};
-    std::vector<int> base2 = {1, 2, 3};
+    BufferSuperficial b1{1, 2, 3};
+    BufferSuperficial b2 = b1;  // Constructor de copia (comparten datos)
+    BufferSuperficial b3;
+    b3 = b1;                    // Asignación por copia (comparten datos)
 
-    std::cout << "== Copia superficial ==\n";
-    ContenedorSuperficial s1(&base1);
-    ContenedorSuperficial s2 = s1; // Copia superficial: comparten el puntero
-    base1[1] = 99;
+    std::cout << "== Estado inicial ==\n";
+    b1.mostrar();
+    b2.mostrar();
+    b3.mostrar();
 
-    s1.mostrar(); // 1 99 3
-    s2.mostrar(); // 1 99 3 (comparten el mismo vector)
+    b1.modificar(1, 99);  // Modifica el recurso compartido
 
-    std::cout << "\n== Copia profunda ==\n";
-    ContenedorProfundo p1(base2);
-    ContenedorProfundo p2 = p1; // Copia profunda: copia independiente
-    base2[1] = 42;
-
-    p1.mostrar(); // 1 2 3
-    p2.mostrar(); // 1 2 3 (no se ve afectado)
+    std::cout << "\n== Después de modificar b1 ==\n";
+    b1.mostrar();
+    b2.mostrar();  // Se ve afectado
+    b3.mostrar();  // También se ve afectado
 }
