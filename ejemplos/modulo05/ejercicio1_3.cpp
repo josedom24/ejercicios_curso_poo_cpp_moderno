@@ -7,9 +7,13 @@ private:
     std::unique_ptr<std::vector<int>> datos;
 
 public:
-    // Constructor con datos iniciales
-    BufferProfundo(std::initializer_list<int> lista)
-        : datos(std::make_unique<std::vector<int>>(lista)) {}
+    // Constructor por defecto
+    BufferProfundo()
+        : datos(std::make_unique<std::vector<int>>()) {}
+
+    // Constructor con datos iniciales (por vector)
+    explicit BufferProfundo(const std::vector<int>& v)
+        : datos(std::make_unique<std::vector<int>>(v)) {}
 
     // Constructor de copia (copia profunda)
     BufferProfundo(const BufferProfundo& other)
@@ -37,9 +41,9 @@ public:
 };
 
 int main() {
-    BufferProfundo b1{1, 2, 3};
+    BufferProfundo b1(std::vector<int>{1, 2, 3});
     BufferProfundo b2 = b1;  // Constructor de copia (duplica datos)
-    BufferProfundo b3{4, 5, 6};
+    BufferProfundo b3(std::vector<int>{4, 5, 6});
     b3 = b1;                 // Asignación por copia (duplica datos)
 
     std::cout << "== Estado inicial ==\n";
