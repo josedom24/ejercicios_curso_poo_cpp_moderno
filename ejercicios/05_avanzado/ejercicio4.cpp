@@ -1,57 +1,67 @@
 #include <iostream>
 
-class Punto2D {
+class Tiempo {
 private:
-    double x;
-    double y;
+    int horas;
+    int minutos;
+
+    // Normaliza los minutos (por ejemplo, 90 min → 1h 30min)
+    void normalizar() {
+        if (minutos >= 60) {
+            horas += minutos / 60;
+            minutos %= 60;
+        } else if (minutos < 0) {
+            int h = (std::abs(minutos) + 59) / 60;
+            horas -= h;
+            minutos += h * 60;
+        }
+    }
 
 public:
-    // Constructor con valores iniciales
-    Punto2D(double x_, double y_) : x(x_), y(y_) {}
-
-    // Sobrecarga del operador + (suma de dos puntos)
-    Punto2D operator+(const Punto2D& otro) const {
-        return Punto2D(x + otro.x, y + otro.y);
+    // Constructor
+    Tiempo(int h = 0, int m = 0) : horas(h), minutos(m) {
+        normalizar();
     }
 
-    // Sobrecarga del operador - (resta de dos puntos)
-    Punto2D operator-(const Punto2D& otro) const {
-        return Punto2D(x - otro.x, y - otro.y);
+    // Sobrecarga de +
+    Tiempo operator+(const Tiempo& otro) const {
+        return Tiempo(horas + otro.horas, minutos + otro.minutos);
     }
 
-    // Sobrecarga del operador == (comparación de igualdad)
-    bool operator==(const Punto2D& otro) const {
-        return (x == otro.x && y == otro.y);
+    // Sobrecarga de -
+    Tiempo operator-(const Tiempo& otro) const {
+        return Tiempo(horas - otro.horas, minutos - otro.minutos);
     }
 
-    // Sobrecarga del operador << (impresión en flujo)
-    // Este operador debe ser externo, ya que el flujo (std::cout) está a la izquierda de la expresión.
-    // Se declara como función amiga para acceder a los miembros privados.
-    friend std::ostream& operator<<(std::ostream& os, const Punto2D& p) {
-        os << "(" << p.x << ", " << p.y << ")";
+    // Sobrecarga de ==
+    bool operator==(const Tiempo& otro) const {
+        return horas == otro.horas && minutos == otro.minutos;
+    }
+
+    // Sobrecarga de <<
+    friend std::ostream& operator<<(std::ostream& os, const Tiempo& t) {
+        os << (t.horas < 10 ? "0" : "") << t.horas << ":"
+           << (t.minutos < 10 ? "0" : "") << t.minutos;
         return os;
     }
 };
 
 int main() {
-    Punto2D p1(3.0, 4.0);
-    Punto2D p2(1.0, 2.0);
+    Tiempo t1(1, 45);  // 1h 45min
+    Tiempo t2(2, 30);  // 2h 30min
 
-    // Uso de los operadores sobrecargados
-    Punto2D suma = p1 + p2;
-    Punto2D resta = p1 - p2;
+    Tiempo suma = t1 + t2;   // 4h 15min
+    Tiempo resta = t1 - t2;  // -0h 45min → se normaliza como 0h -45min = -1h 15min
 
-    // Comparación
-    if (p1 == p2)
-        std::cout << "Los puntos son iguales.\n";
-    else
-        std::cout << "Los puntos son diferentes.\n";
-
-    // Impresión usando operador <<
-    std::cout << "p1: " << p1 << "\n";
-    std::cout << "p2: " << p2 << "\n";
+    std::cout << "t1 = " << t1 << "\n";
+    std::cout << "t2 = " << t2 << "\n";
     std::cout << "Suma: " << suma << "\n";
     std::cout << "Resta: " << resta << "\n";
+
+    if (t1 == t2)
+        std::cout << "Los tiempos son iguales\n";
+    else
+        std::cout << "Los tiempos son diferentes\n";
 
     return 0;
 }
