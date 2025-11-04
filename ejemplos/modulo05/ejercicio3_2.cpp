@@ -3,16 +3,21 @@
 
 class Archivo {
 public:
-    Archivo(const std::string& nombre) {
+    explicit Archivo(const std::string& nombre) {
         std::cout << "Abriendo archivo: " << nombre << '\n';
     }
 
-    // Impedimos la copia y asignación
+    ~Archivo() {
+        std::cout << "Cerrando archivo\n";
+    }
+
+    // Prohibimos la copia
     Archivo(const Archivo&) = delete;
     Archivo& operator=(const Archivo&) = delete;
 };
 
 int main() {
     Archivo a("datos.txt");
-    // Archivo b = a;   // Error: copia prohibida
+    // Archivo b = a;        // Error: constructor de copia eliminado
+    // b = a;                // Error: asignación por copia eliminada
 }
