@@ -2,26 +2,29 @@
 #include <memory>
 #include <vector>
 
-class BufferCompartido {
+class BufferMovil {
 private:
-    std::shared_ptr<std::vector<int>> datos;
+    std::unique_ptr<std::vector<int>> datos;
 
 public:
+    // Constructor por defecto
+    BufferMovil() = default;
+
     // Constructor con datos iniciales
-    BufferCompartido(std::initializer_list<int> lista)
-        : datos(std::make_shared<std::vector<int>>(lista)) {}
+    explicit BufferMovil(const std::vector<int>& v)
+        : datos(std::make_unique<std::vector<int>>(v)) {}
 
     // Constructor de movimiento
-    BufferCompartido(BufferCompartido&& other) noexcept
+    BufferMovil(BufferMovil&& other) noexcept
         : datos(std::move(other.datos)) {
-        std::cout << "Constructor de movimiento (shared)\n";
+        std::cout << "Constructor de movimiento\n";
     }
 
     // Operador de asignación por movimiento
-    BufferCompartido& operator=(BufferCompartido&& other) noexcept {
+    BufferMovil& operator=(BufferMovil&& other) noexcept {
         if (this != &other) {
             datos = std::move(other.datos);
-            std::cout << "Asignación por movimiento (shared)\n";
+            std::cout << "Asignación por movimiento\n";
         }
         return *this;
     }
@@ -37,9 +40,12 @@ public:
 };
 
 int main() {
-    BufferCompartido a{1, 2, 3};
-    BufferCompartido b = std::move(a);  // Mueve la propiedad compartida
+    BufferMovil b1(std::vector<int>{1, 2, 3});
+    BufferMovil b2 = std::move(b1);  // Invoca el constructor de movimiento
+    BufferMovil b3;
+    b3 = std::move(b2);              // Invoca el operador de asignación por movimiento
 
-    std::cout << "a: "; a.mostrar();  // (vacío)
-    std::cout << "b: "; b.mostrar();  // 1 2 3
+    std::cout << "b1: "; b1.mostrar();  // (vacío)
+    std::cout << "b2: "; b2.mostrar();  // (vacío)
+    std::cout << "b3: "; b3.mostrar();  // 1 2 3
 }
