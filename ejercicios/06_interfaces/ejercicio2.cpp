@@ -1,16 +1,22 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include <memory>
 
 // -----------------------------------------------------------
 // Interfaz pura: define el contrato común
 // -----------------------------------------------------------
 class Notificador {
 public:
-    // Método virtual puro: las clases derivadas deben implementarlo
+    // Establece el remitente del mensaje
+    virtual void establecerRemitente(const std::string& r) = 0;
+
+    // Envía el mensaje al destinatario
     virtual void enviarMensaje(const std::string& mensaje) const = 0;
 
-    // Destructor virtual: necesario para liberar correctamente
-    // los objetos derivados a través de punteros o referencias base
+    // Devuelve el tipo de notificador (texto descriptivo)
+    virtual std::string obtenerTipo() const = 0;
+
     virtual ~Notificador() = default;
 };
 
@@ -18,9 +24,21 @@ public:
 // Clase concreta: notificación por correo electrónico
 // -----------------------------------------------------------
 class NotificadorEmail : public Notificador {
+private:
+    std::string remitente;
+
 public:
+    void establecerRemitente(const std::string& r) override {
+        remitente = r;
+    }
+
     void enviarMensaje(const std::string& mensaje) const override {
-        std::cout << "Enviando correo: " << mensaje << std::endl;
+        std::cout << "[EMAIL] De: " << remitente
+                  << " — Enviando correo: " << mensaje << "\n";
+    }
+
+    std::string obtenerTipo() const override {
+        return "Correo electrónico";
     }
 };
 
@@ -28,30 +46,71 @@ public:
 // Clase concreta: notificación por SMS
 // -----------------------------------------------------------
 class NotificadorSMS : public Notificador {
+private:
+    std::string remitente;
+
 public:
+    void establecerRemitente(const std::string& r) override {
+        remitente = r;
+    }
+
     void enviarMensaje(const std::string& mensaje) const override {
-        std::cout << "Enviando SMS: " << mensaje << std::endl;
+        std::cout << "[SMS] De: " << remitente
+                  << " — Enviando SMS: " << mensaje << "\n";
+    }
+
+    std::string obtenerTipo() const override {
+        return "Mensaje de texto";
     }
 };
 
 // -----------------------------------------------------------
-// Función que usa la interfaz, sin depender de implementaciones concretas
+// Clase concreta: notificación tipo Push
 // -----------------------------------------------------------
-void procesarEvento(const Notificador& n) {
-    // La función no necesita saber si es un correo o un SMS
-    n.enviarMensaje("Evento registrado");
+class NotificadorPush : public Notificador {
+private:
+    std::string remitente;
+
+public:
+    void establecerRemitente(const std::string& r) override {
+        remitente = r;
+    }
+
+    void enviarMensaje(const std::string& mensaje) const override {
+        std::cout << "[PUSH] De: " << remitente
+                  << " — Notificación enviada: " << mensaje << "\n";
+    }
+
+    std::string obtenerTipo() const override {
+        return "Notificación Push";
+    }
+};
+
+// -----------------------------------------------------------
+// Función cliente que usa la interfaz, sin depender de detalles
+// -----------------------------------------------------------
+void registrarEvento(Notificador& n, const std::string& mensaje) {
+    std::cout << "Registrando evento con notificador: "
+              << n.obtenerTipo() << "\n";
+    n.enviarMensaje(mensaje);
 }
 
 // -----------------------------------------------------------
 // Función principal
 // -----------------------------------------------------------
 int main() {
-    NotificadorEmail email;
-    NotificadorSMS sms;
+    std::vector<std::unique_ptr<Notificador>> notificadores;
 
-    // La misma función trabaja con ambos tipos de notificador
-    procesarEvento(email);  // Se llama a NotificadorEmail::enviarMensaje
-    procesarEvento(sms);    // Se llama a NotificadorSMS::enviarMensaje
+    notificadores.push_back(std::make_unique<NotificadorEmail>());
+    notificadores.push_back(std::make_unique<NotificadorSMS>());
+    notificadores.push_back(std::make_unique<NotificadorPush>());
+
+    // Establecemos el remitente y enviamos un mensaje con cada uno
+    for (auto& n : notificadores) {
+        n->establecerRemitente("SistemaCentral");
+        registrarEvento(*n, "Alerta de seguridad detectada");
+        std::cout << "----------------------------------\n";
+    }
 
     return 0;
 }
