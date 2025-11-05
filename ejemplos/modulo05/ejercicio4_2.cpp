@@ -5,8 +5,15 @@
 // Clase base con clonación virtual
 class Clonable {
 public:
-    virtual std::unique_ptr<Clonable> clone() const = 0;
-    virtual void mostrar() const = 0;
+    // Método virtual: puede redefinirse en las clases derivadas
+    virtual std::unique_ptr<Clonable> clone() const {
+        return std::make_unique<Clonable>(*this);
+    }
+
+    virtual void mostrar() const {
+        std::cout << "Objeto base Clonable\n";
+    }
+
     virtual ~Clonable() = default;
 };
 
@@ -19,7 +26,7 @@ public:
     DerivadoA(int d) : dato(d) {}
 
     std::unique_ptr<Clonable> clone() const override {
-        return std::make_unique<DerivadoA>(*this); // Copia profunda
+        return std::make_unique<DerivadoA>(*this); // Crea una copia del objeto actual
     }
 
     void mostrar() const override {
@@ -36,7 +43,7 @@ public:
     DerivadoB(const std::vector<int>& v) : datos(v) {}
 
     std::unique_ptr<Clonable> clone() const override {
-        return std::make_unique<DerivadoB>(*this); // Copia profunda
+        return std::make_unique<DerivadoB>(*this); // Crea una copia del objeto actual
     }
 
     void mostrar() const override {
@@ -47,11 +54,16 @@ public:
 };
 
 int main() {
+    std::unique_ptr<Clonable> base = std::make_unique<Clonable>();
     std::unique_ptr<Clonable> a = std::make_unique<DerivadoA>(42);
     std::unique_ptr<Clonable> b = std::make_unique<DerivadoB>(std::vector<int>{1, 2, 3});
 
+    auto clonBase = base->clone();
     auto clonA = a->clone();
     auto clonB = b->clone();
+
+    base->mostrar();
+    clonBase->mostrar();
 
     a->mostrar();
     clonA->mostrar();
