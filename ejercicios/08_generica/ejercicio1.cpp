@@ -1,39 +1,47 @@
 #include <iostream>
 #include <string>
 
-// Definición de una clase plantilla con un parámetro de tipo genérico T
+// Clase plantilla genérica para representar un sensor de cualquier tipo
 template <typename T>
-class Caja {
+class Sensor {
 private:
-    T valor;  // Atributo que almacena el contenido de tipo T
+    T lectura;  // Valor almacenado: puede ser numérico, texto, etc.
 
 public:
-    // Método para establecer el valor
-    void setValor(const T& v) {
-        valor = v;
+    // Asigna una nueva lectura al sensor
+    void setLectura(const T& valor) {
+        lectura = valor;
     }
 
-    // Método para obtener el valor almacenado
-    T getValor() const {
-        return valor;
+    // Devuelve la lectura actual
+    T getLectura() const {
+        return lectura;
     }
 
-    // Método que muestra el contenido por consola
-    void mostrar() const {
-        std::cout << "Valor: " << valor << '\n';
+    // Muestra la lectura con un mensaje descriptivo
+    //    Este método es genérico: imprimirá el valor de cualquier tipo T
+    void mostrar(const std::string& nombre) const {
+        std::cout << "Sensor de " << nombre << ": " << lectura << '\n';
     }
 };
 
 int main() {
-    // Instanciamos la plantilla con el tipo int
-    Caja<int> cajaEnteros;
-    cajaEnteros.setValor(42);
-    cajaEnteros.mostrar();  // Muestra: Valor: 42
+    // Sensor de temperatura (usa tipo double)
+    Sensor<double> sensorTemp;
+    sensorTemp.setLectura(23.5);
 
-    // Instanciamos la plantilla con el tipo std::string
-    Caja<std::string> cajaTexto;
-    cajaTexto.setValor("Plantillas en C++");
-    cajaTexto.mostrar();    // Muestra: Valor: Plantillas en C++
+    // Sensor de humedad (usa tipo int)
+    Sensor<int> sensorHumedad;
+    sensorHumedad.setLectura(45);
+
+    // Sensor de estado (usa tipo std::string)
+    Sensor<std::string> sensorEstado;
+    sensorEstado.setLectura("OK");
+
+    // Mostrar los valores de cada sensor
+    sensorTemp.mostrar("temperatura (°C)");
+    sensorHumedad.mostrar("humedad (%)");
+    sensorEstado.mostrar("estado");
 
     return 0;
 }

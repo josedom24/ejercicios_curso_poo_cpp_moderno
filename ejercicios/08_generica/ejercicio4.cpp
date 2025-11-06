@@ -1,33 +1,44 @@
 #include <iostream>
-#include <vector>
 #include <optional>
 
-// Función que busca un número en el vector y devuelve un std::optional<int>
-std::optional<int> buscar(const std::vector<int>& v, int objetivo) {
-    // Recorremos el vector buscando el valor
-    for (int valor : v) {
-        if (valor == objetivo) {
-            return valor;  // Si lo encuentra, devuelve el valor (estado ocupado)
-        }
+// Función que realiza una división segura usando std::optional.
+// Si el denominador es distinto de cero, devuelve el resultado.
+// Si el denominador es cero, devuelve std::nullopt (sin valor).
+std::optional<double> dividir(int numerador, int denominador) {
+    if (denominador == 0) {
+        // No es posible dividir por cero, devolvemos "sin valor"
+        return std::nullopt;
     }
-    return std::nullopt;    // Si no lo encuentra, devuelve "sin valor"
+
+    // División válida: devolvemos el resultado como double
+    return static_cast<double>(numerador) / denominador;
 }
 
 int main() {
-    std::vector<int> numeros = {3, 5, 7, 9};
+    int numerador, denominador;
 
-    // Caso 1: el valor está presente en el vector
-    std::optional<int> resultado1 = buscar(numeros, 5);
+    // Pedir los números al usuario
+    std::cout << "Introduce el numerador: ";
+    std::cin >> numerador;
 
-    if (resultado1.has_value()) {
-        std::cout << "Valor encontrado: " << resultado1.value() << '\n';
+    std::cout << "Introduce el denominador: ";
+    std::cin >> denominador;
+
+    // Llamar a la función dividir()
+    std::optional<double> resultado = dividir(numerador, denominador);
+
+    // Comprobamos si el resultado contiene un valor válido
+    if (resultado.has_value()) {
+        // Se puede acceder al valor con *resultado o resultado.value()
+        std::cout << "Resultado: " << *resultado << '\n';
+    } else {
+        // Caso en que la división no es válida (denominador = 0)
+        std::cout << "Error: división por cero.\n";
+
+        // value_or() devuelve un valor alternativo si el optional está vacío
+        double valorPorDefecto = resultado.value_or(0.0);
+        std::cout << "Resultado por defecto: " << valorPorDefecto << '\n';
     }
-
-    // Caso 2: el valor no está presente
-    std::optional<int> resultado2 = buscar(numeros, 10);
-
-    // Usamos value_or() para proporcionar un valor por defecto si está vacío
-    std::cout << "Resultado: " << resultado2.value_or(-1) << '\n';
 
     return 0;
 }

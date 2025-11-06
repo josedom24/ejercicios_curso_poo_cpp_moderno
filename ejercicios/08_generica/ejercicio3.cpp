@@ -1,34 +1,62 @@
 #include <iostream>
 #include <string>
 
-// Plantilla general de la clase Contenedor
+// Clase plantilla genérica
+// Esta versión se aplica a todos los tipos excepto 'bool'
 template <typename T>
-class Contenedor {
+class Registro {
+private:
+    T valor;  // Valor almacenado de tipo genérico
+
 public:
-    // Método genérico para mostrar el tipo de contenido
+    // Constructor que inicializa el valor
+    Registro(const T& v) : valor(v) {}
+
+    // Método genérico para mostrar el valor almacenado
     void mostrar() const {
-        std::cout << "Tipo genérico\n";
+        std::cout << "Valor almacenado: " << valor << '\n';
     }
 };
 
-// Especialización total para el tipo std::string
+// Especialización total de la plantilla para el tipo bool
+// Se define un comportamiento distinto para valores lógicos
 template <>
-class Contenedor<std::string> {
+class Registro<bool> {
+private:
+    bool valor;  // Valor lógico almacenado
+
 public:
-    // Método especializado para cadenas de texto
+    // Constructor que inicializa el valor booleano
+    Registro(bool v) : valor(v) {}
+
+    // Método especializado que muestra un mensaje más expresivo
     void mostrar() const {
-        std::cout << "Tipo texto\n";
+        if (valor)
+            std::cout << "Valor lógico: verdadero\n";
+        else
+            std::cout << "Valor lógico: falso\n";
     }
 };
 
 int main() {
-    // Instancia con un tipo genérico (int)
-    Contenedor<int> c1;
-    c1.mostrar();  // Muestra: Tipo genérico
+    // Instancia genérica con tipo int
+    Registro<int> r1(42);
+    r1.mostrar();  // Usa la versión genérica
 
-    // Instancia con tipo std::string (usa la especialización)
-    Contenedor<std::string> c2;
-    c2.mostrar();  // Muestra: Tipo texto
+    // Instancia genérica con tipo double
+    Registro<double> r2(3.14);
+    r2.mostrar();  // Usa la versión genérica
+
+    // Instancia genérica con tipo std::string
+    Registro<std::string> r3("Hola");
+    r3.mostrar();  // Usa la versión genérica
+
+    // Instancia especializada con tipo bool
+    Registro<bool> r4(true);
+    r4.mostrar();  // Usa la versión especializada
+
+    Registro<bool> r5(false);
+    r5.mostrar();  // Usa la versión especializada
 
     return 0;
 }
