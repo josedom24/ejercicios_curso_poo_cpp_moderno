@@ -16,7 +16,7 @@ public:
 };
 
 int main() {
-    Base* b = new Derivada();
-    b->funcion();  // Llama a la versión de Derivada
-    delete b;
+    Derivada d;   // Objeto de tipo Derivada
+    Base& b = d;  // Referencia a Base, enlazada a un objeto Derivada
+    b.funcion();  // Llama a la versión de Derivada gracias al polimorfismo dinámico
 }
