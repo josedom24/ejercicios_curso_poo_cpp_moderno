@@ -1,38 +1,45 @@
 #include <iostream>
 #include <optional>
-
-// Función que puede devolver un número o ningún valor
-std::optional<int> obtenerNumero(bool exito) {
-    if (exito)
-        return 42;           // Valor presente
-    else
-        return std::nullopt; // Sin valor
-}
+#include <string>
 
 int main() {
-    // Caso 1: la función devuelve un valor
-    std::optional<int> resultado1 = obtenerNumero(true);
+    // Declaración vacía de std::optional: no contiene ningún valor
+    std::optional<std::string> mensaje;
 
-    if (resultado1.has_value()) {
-        std::cout << "Valor encontrado: " << resultado1.value() << '\n';
+    // has_value(): comprueba si el optional contiene un valor
+    if (!mensaje.has_value()) {
+        std::cout << "Sin valor inicial.\n";
     }
 
-    // También puede usarse directamente como condición lógica
-    if (resultado1) {
-        std::cout << "Acceso con *resultado1: " << *resultado1 << '\n';
+    // Asignar un valor al optional (ahora deja de estar vacío)
+    mensaje = "Hola mundo";
+
+    // operator bool(): permite comprobar el estado directamente
+    //    if (mensaje) equivale a if (mensaje.has_value())
+    if (mensaje) {
+        std::cout << "Valor asignado: " << *mensaje << '\n';
     }
 
-    // Caso 2: la función no devuelve valor
-    std::optional<int> resultado2 = obtenerNumero(false);
+    // value(): accede al valor almacenado
+    //    Si el optional está vacío, lanza std::bad_optional_access
+    std::cout << "Con value(): " << mensaje.value() << '\n';
 
-    // Usar value_or() para obtener un valor por defecto
-    int numero = resultado2.value_or(0);
-    std::cout << "Valor devuelto o 0 por defecto: " << numero << '\n';
+    // Declarar otro optional vacío
+    std::optional<std::string> otroMensaje;
+    
 
-    // Comprobar si está vacío
-    if (!resultado2) {
-        std::cout << "Sin valor en resultado2.\n";
-    }
+    // value_or(valor_defecto): devuelve el valor almacenado si existe,
+    //    o un valor por defecto si el optional está vacío
+    std::cout << "Valor o por defecto: " << otroMensaje.value_or("Vacío") << '\n';
+    otroMensaje = "Hola C++";
+    std::cout << "Valor o por defecto: " << otroMensaje.value_or("Vacío") << '\n';
+    
+    // reset(): elimina el valor almacenado, dejando el optional vacío
+    mensaje.reset();
+
+    // Comprobamos que ahora está vacío nuevamente
+    std::cout << "Tras reset(), has_value(): "
+              << std::boolalpha << mensaje.has_value() << '\n';
 
     return 0;
 }

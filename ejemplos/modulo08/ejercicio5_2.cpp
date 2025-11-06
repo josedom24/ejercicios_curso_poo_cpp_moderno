@@ -1,35 +1,32 @@
 #include <iostream>
+#include <vector>
 #include <optional>
-#include <string>
+
+// Busca un número en un vector y devuelve un std::optional<int>
+std::optional<int> buscar(const std::vector<int>& datos, int objetivo) {
+    for (int valor : datos) {
+        if (valor == objetivo)
+            return valor;          // Valor encontrado
+    }
+    return std::nullopt;           // Sin valor
+}
 
 int main() {
-    // Declaración vacía: no contiene valor
-    std::optional<std::string> mensaje;
+    std::vector<int> numeros = {3, 5, 7, 9};
 
-    // Comprobar si contiene un valor
-    if (!mensaje.has_value()) {
-        std::cout << "Sin valor inicial.\n";
+    auto resultado = buscar(numeros, 5);
+
+    if (resultado) {
+        std::cout << "Encontrado: " << *resultado << '\n';
     }
 
-    // Asignar un valor
-    mensaje = "Hola mundo";
+    std::cout << "Valor o -1: " << resultado.value_or(-1) << '\n';
 
-    // Comprobar valor usando operator bool()
-    if (mensaje) {
-        std::cout << "Valor asignado: " << *mensaje << '\n';
+    auto resultado2 = buscar(numeros, 100);
+    if (!resultado2) {
+        std::cout << "No encontrado.\n";
     }
 
-    // Acceder al valor con value()
-    std::cout << "Con value(): " << mensaje.value() << '\n';
-
-    // Obtener valor con valor por defecto
-    std::optional<std::string> otroMensaje;
-    std::cout << "Valor o por defecto: " << otroMensaje.value_or("Vacío") << '\n';
-
-    // Reiniciar (vaciar) el optional
-    mensaje.reset();
-    std::cout << "Tras reset(), has_value(): "
-              << std::boolalpha << mensaje.has_value() << '\n';
-
-    return 0;
+    std::cout << "Resultado2 con valor por defecto: "
+              << resultado2.value_or(-1) << '\n';
 }
