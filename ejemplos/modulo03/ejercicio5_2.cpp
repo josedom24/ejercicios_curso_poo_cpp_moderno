@@ -12,8 +12,8 @@ public:
 };
 
 int main() {
-    auto u1 = std::make_shared<Usuario>("Ana");
-    auto u2 = u1;  // Ambos comparten el mismo objeto
+    std::shared_ptr<Usuario> u1 = std::make_shared<Usuario>("Ana");
+    std::shared_ptr<Usuario> u2 = u1;  // Ambos comparten el mismo objeto
 
     u1->saludar();
     u2->saludar();
