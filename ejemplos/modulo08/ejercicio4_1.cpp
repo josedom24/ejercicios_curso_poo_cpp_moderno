@@ -1,24 +1,19 @@
+#include <algorithm>
+#include <array>
 #include <iostream>
 #include <vector>
-#include <algorithm>
-
-// Función plantilla genérica para imprimir un vector
-template <typename T>
-void imprimir(const std::vector<T>& v) {
-    for (const T& val : v)
-        std::cout << val << " ";
-    std::cout << '\n';
-}
 
 int main() {
-    // Contenedor genérico
-    std::vector<int> numeros = {4, 2, 8, 1};
+    std::vector<int> v = {4, 1, 3, 2};
+    std::array<int, 4> a = {8, 5, 7, 6};
 
-    // Algoritmo genérico: ordena la secuencia
-    std::sort(numeros.begin(), numeros.end());
+    std::sort(v.begin(), v.end());
+    std::sort(a.begin(), a.end());
 
-    // Iteradores y función plantilla
-    imprimir(numeros); // Salida: 1 2 4 8
+    std::transform(v.begin(), v.end(), v.begin(), [](int x){ return x * 2; });
+    std::transform(a.begin(), a.end(), a.begin(), [](int x){ return x * 2; });
 
-    return 0;
+    for (int x : v) std::cout << x << " ";  // 2 4 6 8
+    std::cout << '\n';
+    for (int x : a) std::cout << x << " ";  // 10 12 14 16
 }
