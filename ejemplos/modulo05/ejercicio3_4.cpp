@@ -1,9 +1,17 @@
 #include <iostream>
-#include <utility>
+#include <memory>
 
 class Registro {
+private:
+    std::unique_ptr<int[]> datos;
+    size_t tamaño;
+
 public:
-    Registro() = default;                    // Constructor por defecto
+    Registro(size_t n)
+        : datos(std::make_unique<int[]>(n)), tamaño(n) {
+        std::cout << "Registro creado con " << n << " elementos\n";
+    }
+
     ~Registro() = default;                   // Destructor por defecto
 
     Registro(const Registro&) = delete;      // No copiable
@@ -14,7 +22,7 @@ public:
 };
 
 int main() {
-    Registro r1;
+    Registro r1(5);
     Registro r2 = std::move(r1);  // Movimiento permitido
     std::cout << "Fin del programa\n";
 }
