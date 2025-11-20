@@ -1,45 +1,46 @@
 #include <iostream>
-#include <memory>   // std::unique_ptr, std::make_unique
+#include <memory>   // std::shared_ptr, std::make_shared
 
-// Clase simple que simula un sensor
-class Sensor {
+// Clase que simula un recurso compartido
+class RecursoCompartido {
 public:
-    // Constructor: simula la activación del sensor
-    Sensor() {
-        std::cout << "Sensor activado.\n";
+    // Constructor: simula la adquisición del recurso
+    RecursoCompartido() {
+        std::cout << "Recurso compartido creado.\n";
     }
 
-    // Destructor: simula la liberación del sensor
-    ~Sensor() {
-        std::cout << "Sensor desactivado.\n";
+    // Destructor: simula la liberación del recurso
+    ~RecursoCompartido() {
+        std::cout << "Recurso compartido liberado.\n";
     }
 
-    // Método que simula una lectura del sensor
-    void leer() const {
-        std::cout << "Lectura del sensor: 42\n";
+    // Método que representa el uso del recurso
+    void usar() const {
+        std::cout << "Usando el recurso compartido.\n";
     }
 };
 
 int main() {
     std::cout << "Inicio del programa\n";
 
-    // Creación de un puntero inteligente con propiedad exclusiva
-    std::unique_ptr<Sensor> ptr1 = std::make_unique<Sensor>();
+    // Creación de un recurso compartido
+    std::shared_ptr<RecursoCompartido> sp1 = std::make_shared<RecursoCompartido>();
 
-    // Uso del objeto a través del puntero
-    ptr1->leer();
+    {
+        // Se crea una nueva copia compartida
+        std::shared_ptr<RecursoCompartido> sp2 = sp1;
 
-    // Transferencia de propiedad usando std::move
-    std::unique_ptr<Sensor> ptr2 = std::move(ptr1);
+        std::cout << "Número de propietarios actuales: " << sp1.use_count() << '\n';
 
-    // Comprobamos si el primer puntero aún posee el recurso
-    if (!ptr1) {
-        std::cout << "ptr1 ya no posee el recurso.\n";
-    }
+        // Ambos punteros pueden acceder al recurso
+        sp1->usar();
+        sp2->usar();
 
-    // El puntero ptr2 sigue siendo el propietario
-    ptr2->leer();
+        std::cout << "Saliendo del bloque interno...\n";
+    } // sp2 se destruye: el contador de referencias disminuye
+
+    std::cout << "Número de propietarios tras el bloque: " << sp1.use_count() << '\n';
 
     std::cout << "Fin del programa\n";
     return 0;
-} // Aquí se destruye ptr2 y se libera el recurso automáticamente
+} // sp1 se destruye, el contador llega a 0, se libera el recurso

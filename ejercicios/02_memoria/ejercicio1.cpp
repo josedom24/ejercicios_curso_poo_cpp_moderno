@@ -1,51 +1,45 @@
 #include <iostream>
+#include <memory>   // std::unique_ptr, std::make_unique
 
-// Clase que gestiona automáticamente un recurso de memoria dinámica
-class Recurso {
-private:
-    int* ptr;  // Puntero al entero almacenado en memoria dinámica
-
+// Clase simple que simula un sensor
+class Sensor {
 public:
-    // Constructor: adquiere el recurso (reserva memoria)
-    Recurso(int valor = 0) {
-        ptr = new int(valor); // Reserva memoria e inicializa con 'valor'
-        std::cout << "Recurso adquirido. Valor inicial: " << *ptr << '\n';
+    // Constructor: simula la activación del sensor
+    Sensor() {
+        std::cout << "Sensor activado.\n";
     }
 
-    // Destructor: libera el recurso automáticamente
-    ~Recurso() {
-        delete ptr; // Libera la memoria reservada
-        std::cout << "Recurso liberado.\n";
+    // Destructor: simula la liberación del sensor
+    ~Sensor() {
+        std::cout << "Sensor desactivado.\n";
     }
 
-    // Método para establecer un nuevo valor
-    void setValor(int valor) {
-        *ptr = valor;
-    }
-
-    // Método para obtener el valor actual
-    int getValor() const {
-        return *ptr;
-    }
-
-    // Método para mostrar el valor
-    void mostrar() const {
-        std::cout << "Valor actual: " << *ptr << '\n';
+    // Método que simula una lectura del sensor
+    void leer() const {
+        std::cout << "Lectura del sensor: 42\n";
     }
 };
 
 int main() {
-    std::cout << "Inicio del bloque RAII\n";
+    std::cout << "Inicio del programa\n";
 
-    {
-        // Se crea un objeto Recurso dentro de un bloque local
-        Recurso r(42);      // Constructor reserva memoria
-        r.mostrar();         // Muestra el valor actual
+    // Creación de un puntero inteligente con propiedad exclusiva
+    std::unique_ptr<Sensor> ptr1 = std::make_unique<Sensor>();
 
-        r.setValor(100);     // Modifica el valor
-        r.mostrar();         // Muestra el nuevo valor
-    } // Al salir del bloque, se llama automáticamente al destructor
+    // Uso del objeto a través del puntero
+    ptr1->leer();
 
-    std::cout << "Fin del bloque RAII\n";
+    // Transferencia de propiedad usando std::move
+    std::unique_ptr<Sensor> ptr2 = std::move(ptr1);
+
+    // Comprobamos si el primer puntero aún posee el recurso
+    if (!ptr1) {
+        std::cout << "ptr1 ya no posee el recurso.\n";
+    }
+
+    // El puntero ptr2 sigue siendo el propietario
+    ptr2->leer();
+
+    std::cout << "Fin del programa\n";
     return 0;
-}
+} // Aquí se destruye ptr2 y se libera el recurso automáticamente
