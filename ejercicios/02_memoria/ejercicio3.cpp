@@ -37,6 +37,25 @@ int main() {
     std::cout << "nodo2.use_count(): " << nodo2.use_count() << "\n";
     std::cout << "nodo3.use_count(): " << nodo3.use_count() << "\n\n";
 
+    //Recorrido hacia adelante:
+    std::cout << "Recorrido hacia adelante:\n";
+    auto actual = nodo1;
+    while (actual) {
+        std::cout << actual->nombre << " ";
+        actual = actual->siguiente;
+    }
+    std::cout << "\n";
+
+
+    //Recorrido hacia atrás:
+    std::cout << "Recorrido hacia atrás:\n";
+    auto actual_back = nodo3;
+    while (actual_back) {
+        std::cout << actual_back->nombre << " ";
+        actual_back = actual_back->anterior.lock();
+    }
+    std::cout << "\n";
+
     // Fin del bloque -> los nodos serán destruidos automáticamente
     std::cout << "Saliendo de main...\n";
 
