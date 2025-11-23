@@ -1,31 +1,34 @@
 #include <iostream>
 #include <vector>
-#include <functional>
-
-// Función genérica que recibe una operación sobre cada elemento del vector
-void procesarDatos(const std::vector<int>& datos,
-                   const std::function<void(int)>& operacion) {
-    for (int valor : datos)
-        operacion(valor); // Se aplica el comportamiento inyectado
-}
+#include <algorithm>
+#include <string>
 
 int main() {
-    std::vector<int> numeros = {1, 2, 3, 4, 5};
-
-    // Lambda que duplica el valor y lo muestra
-    auto duplicar = [](int x) {
-        std::cout << x << " duplicado: " << x * 2 << '\n';
+    std::vector<std::string> frutas{
+        "cereza", "manzana", "banana", "arándano", "kiwi"
     };
 
-    // Lambda que filtra y muestra solo los pares
-    auto filtrarPares = [](int x) {
-        if (x % 2 == 0)
-            std::cout << "Número par: " << x << '\n';
-    };
+    // 1. Buscar la primera cadena con más de 5 caracteres
+    auto it1 = std::find_if(frutas.begin(), frutas.end(),
+                            [](const std::string& s) {
+                                return s.size() > 5;
+                            });
 
-    std::cout << "=== Aplicando duplicar ===\n";
-    procesarDatos(numeros, duplicar);
+    if (it1 != frutas.end())
+        std::cout << "Primera fruta con más de 5 caracteres: " << *it1 << "\n";
+    else
+        std::cout << "No hay frutas con más de 5 caracteres.\n";
 
-    std::cout << "\n=== Aplicando filtro de pares ===\n";
-    procesarDatos(numeros, filtrarPares);
+    // 2. Buscar la primera cadena que empieza por 'b'
+    auto it2 = std::find_if(frutas.begin(), frutas.end(),
+                            [](const std::string& s) {
+                                return !s.empty() && s[0] == 'b';
+                            });
+
+    if (it2 != frutas.end())
+        std::cout << "Primera fruta que empieza por 'b': " << *it2 << "\n";
+    else
+        std::cout << "No hay frutas que empiecen por 'b'.\n";
+
+    return 0;
 }

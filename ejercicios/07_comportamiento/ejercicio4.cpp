@@ -1,43 +1,49 @@
 #include <iostream>
+#include <string>
 #include <vector>
-#include <functional>
 
-// Functor con estado interno
-class Multiplicador {
+class FormateadorMensaje {
 public:
-    explicit Multiplicador(int factor) : factor_(factor) {}
+    explicit FormateadorMensaje(std::string prefijo)
+        : prefijo_{std::move(prefijo)}, numMensajes_{0} {}
 
-    int operator()(int valor) const {
-        return valor * factor_;
+    std::string operator()(const std::string& mensaje) {
+        ++numMensajes_;
+        return prefijo_ + ": " + mensaje;
+    }
+
+    int numMensajes() const {
+        return numMensajes_;
     }
 
 private:
-    int factor_;
+    std::string prefijo_;
+    int numMensajes_;
 };
 
-// Función genérica que aplica una operación a cada elemento
-void aplicarOperacion(const std::vector<int>& datos,
-                      const std::function<int(int)>& operacion) {
-    for (int x : datos)
-        std::cout << operacion(x) << " ";
-    std::cout << '\n';
-}
-
 int main() {
-    std::vector<int> numeros = {1, 2, 3, 4};
+    FormateadorMensaje info("INFO");
+    FormateadorMensaje error("ERROR");
 
-    Multiplicador por2(2);
-    Multiplicador por10(10);
+    std::vector<std::string> mensajes{
+        "Inicio del programa",
+        "Archivo no encontrado",
+        "Operación completada"
+    };
 
-    // Lambda sin estado: eleva al cuadrado
-    auto cuadrado = [](int x) { return x * x; };
+    std::cout << "=== Mensajes INFO ===\n";
+    for (const auto& m : mensajes) {
+        std::cout << info(m) << '\n';
+    }
 
-    std::cout << "Multiplicar por 2: ";
-    aplicarOperacion(numeros, por2); // Usa functor con estado
+    std::cout << "\n=== Mensajes ERROR ===\n";
+    for (const auto& m : mensajes) {
+        std::cout << error(m) << '\n';
+    }
 
-    std::cout << "Multiplicar por 10: ";
-    aplicarOperacion(numeros, por10); // Usa otro functor con distinto estado
+    std::cout << "\nINFO ha formateado " << info.numMensajes() << " mensajes.\n";
+    std::cout << "ERROR ha formateado " << error.numMensajes() << " mensajes.\n";
 
-    std::cout << "Elevar al cuadrado: ";
-    aplicarOperacion(numeros, cuadrado); // Usa lambda sin estado
+    return 0;
 }
+

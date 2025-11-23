@@ -1,44 +1,43 @@
 #include <iostream>
 #include <functional>
-#include <cmath>
 
-// Clase que encapsula un comportamiento inyectable
-class Calculadora {
+using Filtro = std::function<double(double)>;
+
+class ProcesadorSensor {
 public:
-    using Operacion = std::function<int(int, int)>;
+    explicit ProcesadorSensor(Filtro f)
+        : filtro_(std::move(f)) {}
 
-    explicit Calculadora(Operacion op) : operacion_(std::move(op)) {}
-
-    int calcular(int a, int b) const {
-        return operacion_(a, b);
+    double procesar(double valor) const {
+        return filtro_(valor);
     }
 
 private:
-    Operacion operacion_;
-};
-
-// Functor con estado opcional: calcula potencias
-class Potencia {
-public:
-    int operator()(int base, int exponente) const {
-        return static_cast<int>(std::pow(base, exponente));
-    }
+    Filtro filtro_;
 };
 
 int main() {
-    // Lambdas como comportamientos inyectables
-    auto sumar = [](int a, int b) { return a + b; };
-    auto maximo = [](int a, int b) { return (a > b) ? a : b; };
+    // Filtro identidad
+    ProcesadorSensor identidad([](double v) {
+        return v;
+    });
 
-    // Functor
-    Potencia potencia;
+    // Filtro con umbral mínimo
+    ProcesadorSensor umbral([](double v) {
+        return (v < 10.0) ? 10.0 : v;
+    });
 
-    // Inyección de comportamiento mediante composición
-    Calculadora calcSuma(sumar);
-    Calculadora calcMax(maximo);
-    Calculadora calcPot(potencia);
+    // Filtro suavizado
+    ProcesadorSensor suavizado([](double v) {
+        return v * 0.8;
+    });
 
-    std::cout << "5 + 3 = " << calcSuma.calcular(5, 3) << '\n';
-    std::cout << "Máximo de (5, 3) = " << calcMax.calcular(5, 3) << '\n';
-    std::cout << "5 ^ 3 = " << calcPot.calcular(5, 3) << '\n';
+    double entrada = 5.0;
+
+    std::cout << "Entrada: " << entrada << "\n";
+    std::cout << "Identidad:  " << identidad.procesar(entrada) << "\n";
+    std::cout << "Umbral:     " << umbral.procesar(entrada) << "\n";
+    std::cout << "Suavizado:  " << suavizado.procesar(entrada) << "\n";
+
+    return 0;
 }
